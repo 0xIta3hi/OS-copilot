@@ -1,0 +1,3 @@
+customtkinter==0.3 
+keyboard
+threaded
