@@ -47,11 +47,13 @@ class AgentGUI(ctk.CTk):
         self.withdraw() # Hide (but keep running)
 
     def run_agent_task(self, event=None):
-        user_input = self.entry.get()
-        print(f"Agent processing: {user_input}")
-        
-        self.entry.delete(0, 'end') # Clear box
-        self.hide_window()
+            user_input = self.entry.get()
+            if not user_input: return
+
+            print(f"\n[You]: {user_input}")
+            self.entry.delete(0, 'end')
+            self.hide_window()
+            threading.Thread(target=self.agent_processing, args=(user_input,)).start()
 
     def agent_processing(self, prompt):
         print("[+] Sent to AI server.")
