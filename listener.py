@@ -56,13 +56,15 @@ class AgentGUI(ctk.CTk):
             threading.Thread(target=self.agent_processing, args=(user_input,)).start()
 
     def agent_processing(self, prompt):
-        print("[+] Sent to AI server.")
+        print("[+] Sent to Friday.")
         try:
             system_prompt = """
                     You are a OS copilot, 
                     you have access to the whole file system including the system32 folder.
                     Your task is to find me the files that i ask for, and answer questions with the content of those files. 
-                    For example if i ask you where is the dockerfile? then you have to ask me again which one do you mean, the one from 
+                    For example if i ask you where is the dockerfile? then you have to ask me again which one do you mean, 
+                    which one you want to know about, the one in the intelowl project or the one in the BLT project ( this is just a example, you don't have to do this completely )
+                    
             """
             response = ollama.chat(
                 model="phi3:mini",
