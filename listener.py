@@ -1,6 +1,7 @@
 import customtkinter as ctk
 import keyboard
 import threading
+import ollama
 
 class AgentGUI(ctk.CTk):
     def __init__(self):
@@ -51,6 +52,27 @@ class AgentGUI(ctk.CTk):
         
         self.entry.delete(0, 'end') # Clear box
         self.hide_window()
+
+    def agent_processing(self, prompt):
+        print("[+] Sent to AI server.")
+        try:
+            system_prompt = """
+                    You are a OS copilot, 
+                    you have access to the whole file system including the system32 folder.
+                    Your task is to find me the files that i ask for, and answer questions with the content of those files. 
+                    For example if i ask you where is the dockerfile? then you have to ask me again which one do you mean, the one from 
+            """
+            response = ollama.chat(
+                model="phi3:mini",
+                messages=[
+                    {'role':'system', 'content':system_prompt},
+                    {'role':'user', 'content':prompt}
+                ]
+            )
+            reply = response['message']['content']
+            print(f"[Friday]: {reply}")
+        except Exception as e:
+            print(f"Failed due to {e}")
 
 # --- The Listener Thread ---
 def start_listener(app):
