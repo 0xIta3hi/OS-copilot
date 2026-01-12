@@ -2,7 +2,8 @@ import customtkinter as ctk
 import keyboard
 import threading
 import ollama
-
+from file_search import *
+import json
 class AgentGUI(ctk.CTk):
     def __init__(self):
         super().__init__()
@@ -58,23 +59,52 @@ class AgentGUI(ctk.CTk):
     def agent_processing(self, prompt):
         print("[+] Sent to Friday.")
         try:
-            system_prompt = """
-                    You are a OS copilot, 
-                    you have access to the whole file system including the system32 folder.
-                    Your task is to find me the files that i ask for, and answer questions with the content of those files. 
-                    For example if i ask you where is the dockerfile? then you have to ask me again which one do you mean, 
-                    which one you want to know about, the one in the intelowl project or the one in the BLT project ( this is just a example, you don't have to do this completely )
-                    
+            SYSTEM_PROMPT = """
+            You are a Windows OS Automation Agent.
+            You do NOT respond with conversation, apologies, or explanations.
+            You ONLY respond with executable JSON.
+
+            Available Tools:
+            1. search_files(keyword): Search for files in the home directory.
+
+            Format your response exactly like this:
+            {
+                "tool": "search_files",
+                "parameters": {
+                    "keyword": "example.txt"
+                }
+            }
+
+            If the user input is not a command (e.g., "Hi"), return:
+            {
+                "tool": "none",
+                "parameters": {}
+            }
             """
             response = ollama.chat(
                 model="phi3:mini",
                 messages=[
-                    {'role':'system', 'content':system_prompt},
+                    {'role':'system', 'content':SYSTEM_PROMPT},
                     {'role':'user', 'content':prompt}
                 ]
             )
             reply = response['message']['content']
-            print(f"[Friday]: {reply}")
+            clean_json = reply.replace("```json", "").replace("``", "").strip()
+            command = json.loads(clean_json)
+            if command.get('tools') == "search_files":
+                query = command['parameters']['keyword']
+                print(f"Agent action: searching for {query}")
+                files_found = search_files(query)
+                if files_found:
+                    print("[+] Found these files:")
+                    for f in files_found:
+                        print(f" - {f}")
+                else:
+                    print("No such file in the system.")
+            elif command.get("tool") == "none":
+                print("Agent: (Ignored conversational input)")
+        except json.JSONDecodeError as e:
+            print(f"Error: LLM failed to generate valid json. {e}")
         except Exception as e:
             print(f"Failed due to {e}")
 
