@@ -13,11 +13,14 @@ def search_files(filename_keyword):
         for file in files:
             if filename_keyword.lower in file.lower:
                 full_path = os.path.join(root, file)
+                print('function called successfully, full path is:\n',full_path)
                 full_path_lower = full_path.lower()
                 if all(term in full_path_lower for term in search_terms):
                     results.append(full_path)
 
                     if len(results) > 5:
                         return results
+                    
+    print(results)
     return results
 

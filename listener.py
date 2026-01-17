@@ -89,10 +89,19 @@ class AgentGUI(ctk.CTk):
                 ]
             )
             reply = response['message']['content']
-            clean_json = reply.replace("```json", "").replace("``", "").strip()
-            command = json.loads(clean_json)
+            print("Raw reply : \n",reply)
+            start_indx = reply.find('{')
+            end_indx = reply.rfind('}')
+            if start_indx != -1 and end_indx != -1:
+                clean_json = reply[start_indx : end_indx + 1]
+                print( "Json After cleaning: \n", clean_json)
+                command = json.loads(clean_json)
+                print("Selected command:\n", command)
+            else:
+                print('Error: No brackets found.')
             if command.get('tools') == "search_files":
                 query = command['parameters']['keyword']
+                print("Recieved query:\n", query)
                 print(f"Agent action: searching for {query}")
                 files_found = search_files(query)
                 if files_found:
