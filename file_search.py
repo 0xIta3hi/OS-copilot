@@ -1,26 +1,51 @@
 import os
+import string
 
-results = []
+def get_drives():
+    """Returns a list of available drives (C:\, D:\, etc.)"""
+    drives = []
+    # FIX: Use wmic to get actual mounted drives
+    bitmask = os.popen('wmic logicaldisk get caption').read()
+    for letter in string.ascii_uppercase:
+        # FIX: Check for the letter variable, not the string "letter"
+        if f"{letter}:" in bitmask:
+            drives.append(f"{letter}:\\")
+    return drives
+
 def search_files(filename_keyword):
     """
-    Searches a file based on a certain keyword if the file contains the keyword then it returns it. 
-    Skips hidden directories.
+    Searches a file based on a keyword.
     """
-    start_path = os.environ('USERPROFILE')
-    search_terms = filename_keyword.lower.split()
-    for root, dirs, files in start_path:
-        dirs[:] = [d for d in dirs if not d.startswith('.') and d != ["AppData", "node_modules", "__pycache__"]]
-        for file in files:
-            if filename_keyword.lower in file.lower:
+    results = []
+    # FIX: lower() needs parentheses
+    search_terms = filename_keyword.lower().split()
+    
+    # Get all drives to search
+    search_roots = get_drives()
+    print(f"DEBUG: Searching drives: {search_roots}")
+
+    for start_dir in search_roots:
+        # FIX: Added os.walk() - without this, you are just looping over letters
+        for root, dirs, files in os.walk(start_dir):
+            
+            # FIX: Skip system folders to prevent freezing
+            if 'Windows' in root or 'Program Files' in root:
+                continue
+
+            # FIX: 'not in' list, not '!=' list
+            dirs[:] = [d for d in dirs if not d.startswith('.') and d not in ["AppData", "node_modules", "__pycache__", "$RECYCLE.BIN"]]
+
+            for file in files:
+                # FIX: full path creation
                 full_path = os.path.join(root, file)
-                print('function called successfully, full path is:\n',full_path)
                 full_path_lower = full_path.lower()
+
+                # FIX: Check if ALL terms are in the path
                 if all(term in full_path_lower for term in search_terms):
+                    print(f"[+] Found: {full_path}")
                     results.append(full_path)
 
-                    if len(results) > 5:
+                    if len(results) >= 5:
                         return results
-                    
-    print(results)
+                  
     return results
-

@@ -99,21 +99,28 @@ class AgentGUI(ctk.CTk):
                 print("Selected command:\n", command)
             else:
                 print('Error: No brackets found.')
-            if command.get('tools') == "search_files":
+            if command.get('tool') == "search_files":
                 query = command['parameters']['keyword']
                 print("Recieved query:\n", query)
                 print(f"Agent action: searching for {query}")
+
                 files_found = search_files(query)
+
                 if files_found:
                     print("[+] Found these files:")
                     for f in files_found:
                         print(f" - {f}")
                 else:
                     print("No such file in the system.")
+
             elif command.get("tool") == "none":
                 print("Agent: (Ignored conversational input)")
+            else:
+                print(f"[!] Agent Tried to use a fake_tool {command}")
+                
         except json.JSONDecodeError as e:
             print(f"Error: LLM failed to generate valid json. {e}")
+
         except Exception as e:
             print(f"Failed due to {e}")
 
