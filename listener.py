@@ -80,7 +80,7 @@ class AgentGUI(ctk.CTk):
                     {'role':'system', 'content':SYSTEM_PROMPT},
                     {'role':'user', 'content':prompt}
                 ],
-                options={'temperature': 0} # Keep it strict
+                options={'temperature': 0.4} # Keep it strict yet creative enough
             )
             
             reply = response['message']['content']
@@ -150,5 +150,5 @@ if __name__ == "__main__":
     app.withdraw()
     listener_thread = threading.Thread(target=start_listener, args=(app,), daemon=True)
     listener_thread.start()
-    print("OS Copilot (Qwen Edition) is running...")
+    print("OS Copilot is running...")
     app.mainloop()
