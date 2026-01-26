@@ -24,8 +24,8 @@ def extract_json(text):
         if count == 0:
             return text[start_index : i+1]
         return None
-    
-    
+
+
 class AgentGUI(ctk.CTk):
     def __init__(self):
         super().__init__()
@@ -77,21 +77,19 @@ class AgentGUI(ctk.CTk):
         print("[+] Sent to Qwen.")
         try:
             # UPDATED SYSTEM PROMPT FOR QWEN
-            SYSTEM_PROMPT = """
-            You are a Windows OS Automation Agent.
-            You do NOT respond with conversation. You ONLY respond with executable JSON.
-
-            Available Tools:
-            1. search_files(keyword): Search for files by name/path.
-            2. read_files(path): Read the content of a file (Code, Logs, Text).
-            3. open_files(path): Open a file in the default Windows app.
-
-            Example Response:
-            { "tool": "search_files", "parameters": { "keyword": "notes.txt" } }
-            
-            If the user input is not a command, return:
-            { "tool": "none", "parameters": {} }
-            """
+            self.system_prompt = """
+                    You are a Windows Automation Agent.
+                    You ONLY respond with executable JSON.
+                    
+                    Tools:
+                    1. search_files(keyword): Search for a file path.
+                    2. read_files(path): Read file content.
+                    3. open_files(path): Open a file.
+                    
+                    Example: { "tool": "search_files", "parameters": { "keyword": "notes.txt" } }
+                    If no tool matches, return: { "tool": "none", "parameters": {} }
+                        """
+            self.messages = [{'role':"system", 'Content': self.system_prompt}]
             
             response = ollama.chat(
                 model="qwen2.5-coder", # Make sure this matches your pull name
