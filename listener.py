@@ -7,6 +7,25 @@ import json
 from file_search import search_files
 from tools import read_files, open_files 
 
+
+def extract_json(text):
+    """
+    Finds the first valid JSON object in a string, ignoring 
+    text before the first '{' and after the matching '}'.
+    """
+    text = text.strip()
+    start_index = text.find('{')
+    if start_index == -1: return None
+
+    count = 0
+    for i, char in enumerate(text[start_index:], start=start_index):
+        if char == '{': count +=1
+        elif char == "}": count -=1
+        if count == 0:
+            return text[start_index : i+1]
+        return None
+    
+    
 class AgentGUI(ctk.CTk):
     def __init__(self):
         super().__init__()
