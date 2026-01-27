@@ -90,11 +90,11 @@ class AgentGUI(ctk.CTk):
                     If no tool matches, return: { "tool": "none", "parameters": {} }
                         """
             self.messages = [{'role':"system", 'Content': self.system_prompt}]
-            
+
             response = ollama.chat(
                 model="qwen2.5-coder", # Make sure this matches your pull name
                 messages=[
-                    {'role':'system', 'content':SYSTEM_PROMPT},
+                    {'role':'system', 'content':self.system_prompt},
                     {'role':'user', 'content':prompt}
                 ],
                 options={'temperature': 0.4} # Keep it strict yet creative enough

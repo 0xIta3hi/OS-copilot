@@ -1,4 +1,4 @@
-customtkinter==0.3 
+customtkinter
 keyboard
 threaded
 ollama
