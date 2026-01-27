@@ -5,11 +5,11 @@ def get_drives():
     """Returns a list of available drives (C:\, D:\, etc.)"""
     drives = []
     # FIX: Use wmic to get actual mounted drives
-    bitmask = os.popen('wmic logicaldisk get caption').read()
     for letter in string.ascii_uppercase:
         # FIX: Check for the letter variable, not the string "letter"
-        if f"{letter}:" in bitmask:
-            drives.append(f"{letter}:\\")
+        drive_path = f"{letter}:\\"
+        if os.path.exists(drive_path):
+            drives.append(drive_path)
     return drives
 
 def search_files(filename_keyword):
@@ -19,7 +19,6 @@ def search_files(filename_keyword):
     results = []
     # FIX: lower() needs parentheses
     search_terms = filename_keyword.lower().split()
-    
     # Get all drives to search
     search_roots = get_drives()
     print(f"DEBUG: Searching drives: {search_roots}")
@@ -47,5 +46,5 @@ def search_files(filename_keyword):
 
                     if len(results) >= 5:
                         return results
-                  
+                     
     return results
