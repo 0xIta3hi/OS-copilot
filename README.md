@@ -1,123 +1,72 @@
-# 🕵️ OS Copilot (Local)
+# OS Copilot (Local) 🤖💻
 
-**A privacy-first, open-source AI Agent for Windows that runs entirely on your machine.**
+### _Privacy-First, Local-LLM Automation for Windows_
 
-OS Copilot is a **native Windows automation tool** designed to replace cloud-based assistants like Microsoft Copilot. It lives in your background processes, wakes up with a hotkey, and interacts with your file system using a local LLM. **No data leaves your device.**
+OS Copilot is an open-source, native Windows agent designed to give users the power of an AI assistant without the privacy trade-offs of cloud-based services. It runs **100% locally** via Ollama, allowing it to search, read, and interact with your file system without a single byte of data leaving your device.
 
-## ✨ Features
+## ⚡ Why OS Copilot?
 
-- **⚡ Instant Access:** Triggered globally via `Ctrl + Space` (Spotlight/Raycast style).
+Current AI assistants require "Everything Access" to your cloud data. OS Copilot flips the script:
+
+- **Total Privacy:** Uses `Llama 3` running locally. Your personal documents, code, and logs remain on your disk.
     
-- **🔒 Privacy First:** Runs on **Ollama** (Llama 3) locally. Your files are never sent to OpenAI/Anthropic.
+- **Native Windows Integration:** Built with a "Spotlight-style" global overlay (`Ctrl + Space`) for instant access from any application.
     
-- **🧠 Intelligent Search:** Finds files by context and path keywords (e.g., "intelowl docker" finds `.../IntelOwl/Dockerfile`).
-    
-- **🛠️ Agentic Tool Use:** The LLM doesn't just chat; it executes Python functions to search, read, and open files.
-    
-- **🛡️ Safety Rails:** Large files are truncated automatically with user prompts to continue reading, preventing memory crashes.
+- **Agentic Capabilities:** It doesn't just chat; it uses **ReAct (Reason + Act) prompting** to execute Python-based "Tools" for file system operations.
     
 
-## 🛠️ Tech Stack
+## 🛠️ The "Agentic" Workflow
 
-- **Core:** Python 3.11 (Native Windows)
-    
-- **GUI:** `customtkinter` (Modern, dark-mode overlay)
-    
-- **LLM Backend:** `ollama` (Running `llama3`)
-    
-- **Input Handling:** `keyboard` (Global hotkeys via background threading)
-    
+OS Copilot operates on a continuous feedback loop:
 
-## 🚀 Installation
-
-### 1. Prerequisites
-
-- **Python 3.10+** installed.
+1. **Observation:** User asks: "Find my resume and tell me the last job I listed."
     
-- **[Ollama](https://ollama.com/)** installed and running.
+2. **Reasoning:** The LLM decides it needs to use the `search_files` tool first.
     
-- Pull the Llama 3 model:
+3. **Action:** The Python backend executes the search and returns paths to the LLM.
     
-    PowerShell
+4. **Refinement:** The LLM then chooses the `read_file` tool to extract the job info.
     
-    ```
-    ollama pull llama3
-    ```
+5. **Final Output:** AI presents the answer to the user in the UI overlay.
     
 
-### 2. Clone & Install
+## 🛠️ Technical Stack
 
-Bash
+- **Backend:** Python 3.11 with custom threading for the global hotkey listener.
+    
+- **GUI:** `customtkinter` – Provides a modern, GPU-accelerated, dark-mode interface.
+    
+- **Inference Engine:** `Ollama` (Running `Llama 3`).
+    
+- **Tooling:** Custom Python OS wrappers for secure file searching and reading.
+    
+
+## 🛡️ Safety & Guardrails
+
+Because the agent can access the file system, security is built into the core:
+
+- **Read-Only Default:** Currently, the agent is restricted to `Search`, `Read`, and `Open` operations. No `Delete` or `Edit` permissions are granted by default.
+    
+- **Context Truncation:** To prevent LLM "memory crashes," large files are automatically summarized or truncated before being sent to the LLM.
+    
+- **User-in-the-Loop:** For sensitive operations like opening an executable, the system can be configured to require manual confirmation.
+    
+
+## 🚀 Getting Started
+
+1. **Install Ollama:** Download from [ollama.com](https://ollama.com "null").
+    
+2. **Pull Model:** `ollama pull llama3`
+    
+3. **Clone & Run:**
+    
 
 ```
-git clone https://github.com/yourusername/os-copilot.git
-cd os-copilot
-
-# Create a virtual environment (Recommended)
-python -m venv venv
-.\venv\Scripts\activate
-
-# Install dependencies
-pip install customtkinter keyboard ollama
+git clone [https://github.com/yourusername/os-copilot.git](https://github.com/yourusername/os-copilot.git)
+pip install -r requirements.txt
+python main.py
 ```
 
-## 🎮 Usage
+_Press `Ctrl + Space` to summon the assistant._
 
-1. **Start the Agent:**
-    
-    Bash
-    
-    ```
-    python main.py
-    ```
-    
-    _(The script will hide itself and run in the background)_
-    
-2. **Trigger the UI:** Press **`Ctrl + Space`**.
-    
-3. **Command Examples:**
-    
-    - _"Where is the dockerfile for the intelowl project?"_
-        
-    - _"Open my resume PDF."_
-        
-    - _"Read the error logs in the downloads folder."_
-        
-
-## 🧩 Architecture
-
-The system uses a **ReAct (Reason + Act)** loop approach:
-
-1. **Listener:** A background thread waits for the hotkey.
-    
-2. **Input:** User types a natural language query.
-    
-3. **Reasoning:** Llama 3 receives the query + a System Prompt forcing it to output **JSON**.
-    
-4. **Action:** The Python script parses the JSON, executes the corresponding tool (`search_files`, `read_files`, etc.), and returns the output.
-    
-
-## ⚠️ Disclaimer
-
-**Use with caution.** This agent executes code on your local machine. While it currently only has read/search permissions, future versions with "Edit" or "Delete" capabilities should be monitored closely. I am not responsible if the agent hallucinates and you accidentally delete your homework folder.
-
-## 🗺️ Roadmap
-
-- [x] Basic GUI & Hotkey Listener
-    
-- [x] JSON Function Calling (Search, Read, Open)
-    
-- [ ] **Conversation Memory** (Context retention between turns)
-    
-- [ ] **File Editing** (Apply diffs/patches to code)
-    
-- [ ] **RAG Integration** (Chat with your PDF/Notes content)
-    
-
-## 🤝 Contributing
-
-Pull requests are welcome! If you want to teach this agent new tricks (new tools), feel free to open an issue.
-
-## 📄 License
-
-MIT
+_Empowering users with private, local intelligence._
