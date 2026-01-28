@@ -162,10 +162,14 @@ def start_listener(app):
     keyboard.wait()
 
 if __name__ == "__main__":
-    ctk.set_appearance_mode("dark")
-    app = AgentGUI()
-    app.withdraw()
-    listener_thread = threading.Thread(target=start_listener, args=(app,), daemon=True)
-    listener_thread.start()
-    print("OS Copilot is running...")
-    app.mainloop()
+    try:
+
+        ctk.set_appearance_mode("dark")
+        app = AgentGUI()
+        app.withdraw()
+        listener_thread = threading.Thread(target=start_listener, args=(app,), daemon=True)
+        listener_thread.start()
+        print("OS Copilot is running...")
+        app.mainloop()
+    except KeyboardInterrupt as e:
+        print('Exiting.')
