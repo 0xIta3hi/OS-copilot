@@ -17,7 +17,7 @@ def search_files(keyword):
     """
     results = [] # List of tuples: (score, file_path)
     keyword = keyword.lower()
-    
+    search_terms = [term for term in keyword.lower().split() if term]
     # Get all drives
     search_roots = get_drives()
     
@@ -35,27 +35,27 @@ def search_files(keyword):
             for file in files:
                 file_lower = file.lower()
                 full_path = os.path.join(root, file)
-
+                if all(term in file_lower for term in search_terms):
                 # --- THE SCORING LOGIC ---
-                score = 0
-                
-                # Check 1: Is the keyword in the file name?
-                if keyword in file_lower:
-                    # Case A: Exact Match (e.g. "hosts" == "hosts") -> JACKPOT
-                    if file_lower == keyword:
-                        score += 100
+                    score = 0
                     
-                    # Case B: Starts With (e.g. "hosts.txt") -> Good
-                    elif file_lower.startswith(keyword):
-                        score += 50
+                    # Check 1: Is the keyword in the file name?
+                    if keyword in file_lower:
+                        # Case A: Exact Match (e.g. "hosts" == "hosts") -> JACKPOT
+                        if file_lower == keyword:
+                            score += 100
                         
-                    # Case C: Contains (e.g. "LocalHost") -> Okay
-                    else:
-                        score += 10
-                    
-                    score -= len(full_path) * 0.1 
-                    
-                    results.append((score, full_path))
+                        # Case B: Starts With (e.g. "hosts.txt") -> Good
+                        elif file_lower.startswith(keyword):
+                            score += 50
+                            
+                        # Case C: Contains (e.g. "LocalHost") -> Okay
+                        else:
+                            score += 10
+                        
+                        score -= len(full_path) * 0.1 
+                        
+                        results.append((score, full_path))
 
     results.sort(key=lambda x: x[0], reverse=True)
     
