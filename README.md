@@ -67,11 +67,11 @@ pip install -r requirements.txt
 python main.py
 ```
 
-## Enhancements:
-    - Case Sensitive detection.
-    - The Agent can't yet think through vague inputs.
-    - Latency reduction.
-
 _Press `Ctrl + Space` to summon the assistant._
+
+## Future Enhancement:
+- Integrate RAG.
+- Voice Assisted Searching.
+- low-latency for results.
 
 _Empowering users with private, local intelligence._
