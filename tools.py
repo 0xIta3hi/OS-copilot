@@ -6,9 +6,9 @@ import os
 def read_files(file_name):
     try:
         with open(file_name, 'r', encoding='utf-8') as f:
-            content = f.read(2000)
-            if len(content) == 2000:
-                print("[!] File too long to read showing first 2000 character")
+            content = f.read(10000)
+            if len(content) == 10000:
+                print("[!] File too long to read showing first 10000 character")
                 print(content)
 
                 user_agreement = input("Do you want to read the rest of file (y/n)")
