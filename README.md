@@ -62,7 +62,7 @@ Because the agent can access the file system, security is built into the core:
     
 
 ```
-git clone [https://github.com/yourusername/os-copilot.git](https://github.com/yourusername/os-copilot.git)
+git clone [https://github.com/0xIta3hi/os-copilot.git](https://github.com/0xIta3hi/os-copilot.git
 pip install -r requirements.txt
 python main.py
 ```
