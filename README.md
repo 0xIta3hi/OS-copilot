@@ -67,6 +67,10 @@ pip install -r requirements.txt
 python main.py
 ```
 
+### Upcoming updates
+- linking the backend to a new backend which is integrated with composio to have everything at the finger tips of the user. Anything the user will every need.
+- reducing the latency in Agentic Operations. (ideally sub 100ms)
+
 _Press `Ctrl + Space` to summon the assistant._
 
 ## Future Enhancement:
