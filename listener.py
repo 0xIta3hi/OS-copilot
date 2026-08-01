@@ -13,4 +13,29 @@ TOOL_REGISTRY = {
     "send_discord_message":"sends a discord message to a specific server and channel"
 }
 
+import ollama
+import json
+import os
 
+def get_tool_choice(user_input: str) -> str | None:
+    tool_list = "\n".join(f"- {name}: {desc}" for name, desc in TOOL_REGISTRY.items())
+    SYSTEM_PROMPT = f""" You are a routing agent, Given a user input, pick a tool from this list: {tool_list}
+                         Respond only with a json object of format : {{"tool":"<tool_name>"}}, nothing else.   
+                         if no tools fit respond with : {{"tool":"none"}}.
+    """
+    response = ollama.chat(
+        model="qwen2.5-coder",
+        messages=[
+            {"role":"system", "content":SYSTEM_PROMPT},
+            {"role":"user", "content":user_input}
+        ],
+        options={"temperature":0}
+    )
+    raw = response["message"]["content"].strip()
+    try:
+        parsed_json = json.loads(raw)
+        tool = parsed_json.get("tool")
+        return tool if tool in TOOL_REGISTRY else None
+    except json.JSONDecodeError:
+        print("LLM did not generate valid json.\n", raw)
+        return None
