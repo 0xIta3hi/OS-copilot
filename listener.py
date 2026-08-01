@@ -24,7 +24,7 @@ def get_tool_choice(user_input: str) -> str | None:
                          if no tools fit respond with : {{"tool":"none"}}.
     """
     response = ollama.chat(
-        model="qwen2.5-coder",
+        model="phi3:mini",
         messages=[
             {"role":"system", "content":SYSTEM_PROMPT},
             {"role":"user", "content":user_input}
@@ -35,7 +35,24 @@ def get_tool_choice(user_input: str) -> str | None:
     try:
         parsed_json = json.loads(raw)
         tool = parsed_json.get("tool")
+        print(f"tool selected : {tool}")
         return tool if tool in TOOL_REGISTRY else None
     except json.JSONDecodeError:
         print("LLM did not generate valid json.\n", raw)
         return None
+
+if __name__ == "__main__":
+    test_prompts = [
+        "Find the file named report.pdf",
+        "Read the file notes.txt from my Documents folder",
+        "Open calculator.py",
+        "Send an email to john@example.com saying hello",
+        "Send a Discord message to the #general channel",
+        "What's the weather today?"
+    ]
+
+    for prompt in test_prompts:
+        tool = get_tool_choice(prompt)
+        print(f"User: {prompt}")
+        print(f"Chosen Tool: {tool}")
+        print("-" * 40)
