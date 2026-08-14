@@ -1,7 +1,11 @@
 import platform
 import subprocess
 import os
-
+from composio import Composio
+import asyncio
+from composio_llamaindex import LlamaIndexProvider
+from llama_index.core.agent.workflow import FunctionAgent
+from llama_index.llms.openai import OpenAI
 
 def read_files(file_name):
     try:
@@ -32,5 +36,20 @@ def open_files(file_name):
         return f"Error : {e}"
 
 
+# Implementing composio tools logic.
+composio = Composio(provider=LlamaIndexProvider())
+llm = OpenAI(model="gpt-5.2")
+
+session = composio.create(user_id="user_1337")
+tools = session.tools()
+agent = FunctionAgent(tools=tools, llm=llm)
+
+async def main():
+    result = await agent.run(
+        user_msg="send an email to john@example.com with the subject composio email be working !!!"
+    )
+    print(result)
+
+asyncio.run(main())
 
 
