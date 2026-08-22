@@ -1,13 +1,4 @@
-import platform
-import subprocess
 import os
-from openai import OpenAI
-from composio import Composio
-from dotenv import load_dotenv
-
-load_dotenv()
-
-composio = Composio()
 
 
 def read_files(file_name):
@@ -37,33 +28,5 @@ def open_files(file_name):
         return f"File Opened: {file_name}"
     except Exception as e:
         return f"Error : {e}"
-
-
-# Implementing composio tools logic.
-# initializing the client.
-client = OpenAI(
-    base_url="https://openrouter.ai/api/v1",
-    api_key=os.getenv("OPENAI_API_KEY")
-)
-
-toolset = "Tool set yet to be decided."
-
-tools = toolset.get_tools(apps=[App.GITHUB])
-
-messages = [
-    {
-        "role":"user",
-        "content":"Star the repository : 0xIta3hi/OS-copilot on Github"
-    }
-]
-
-response = client.chat.completions.create(
-    model="anthropic/claude-3.5-sonnet",
-    messages=messages,
-    tools=tools,
-    tool_choice="auto",
-)
-tool_result = toolset.handle_tool_calls(response)
-print("Tool Execution Result:", tool_result)
 
 
