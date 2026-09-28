@@ -1,4 +1,5 @@
-
+from github import Github 
+g = Github("your_github_token")
 
 class Github():
     def __init__(self):
@@ -8,7 +9,19 @@ class Github():
         """"
         Get information about a Github repository
         """
-        pass
+        repo = g.get_repo(repo_url)
+        return {
+            "name": repo.name,
+            "full_name": repo.full_name,
+            "description": repo.description,
+            "url": repo.html_url,
+            "stars": repo.stargazers_count,
+            "forks": repo.forks_count,
+            "open_issues": repo.open_issues_count,
+            "watchers": repo.watchers_count,
+            "language": repo.language,
+            "created_at": repo.created_at.isoformat(),
+        }
 
     def list_issues(self, repo_url: str, state: str = "open") -> list[dict]:
         """"
