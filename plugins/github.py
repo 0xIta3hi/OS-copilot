@@ -44,6 +44,17 @@ class Github():
         """
         List all the open pull requests in a github repository.
         """
-        pass
+        pr = g.get_repo(repo_url).get_pulls(state=state)
+        return [
+            {
+                "title": pr.title,
+                "number": pr.number,
+                "url": pr.html_url,
+                "state": pr.state,
+                "created_at": pr.created_at.isoformat(),
+                "updated_at": pr.updated_at.isoformat(),
+            }
+            for pr in pr
+        ]
 
 
