@@ -1,5 +1,8 @@
 from github import Github 
-g = Github("your_github_token")
+import os
+
+GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+g = Github(GITHUB_TOKEN)
 
 class Github():
     def __init__(self):
