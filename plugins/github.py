@@ -22,12 +22,23 @@ class Github():
             "language": repo.language,
             "created_at": repo.created_at.isoformat(),
         }
-
     def list_issues(self, repo_url: str, state: str = "open") -> list[dict]:
         """"
         List all the open issues in a Github repository
         """
-        pass
+        issues = g.get_repo(repo_url).get_issues(state=state)
+        return [
+            {
+                "title": issue.title,
+                "number": issue.number,
+                "url": issue.html_url,
+                "state": issue.state,
+                "created_at": issue.created_at.isoformat(),
+                "updated_at": issue.updated_at.isoformat(),
+            }
+            for issue in issues
+        ]
+
 
     def list_prs(self, repo_url:str, state:str = "open") -> list[dict]:
         """
