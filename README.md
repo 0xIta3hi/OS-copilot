@@ -1,81 +1,103 @@
-# OS Copilot (Local) 🤖💻
+# OS Copilot
 
-### _Privacy-First, Local-LLM Automation for Windows_
+OS Copilot is a local Python agent that uses Ollama to translate natural-language requests into registered plugin actions. The current implementation provides a read-only local filesystem plugin and a small plugin registry designed for adding more platform integrations.
 
-OS Copilot is an open-source, native Windows agent designed to give users the power of an AI assistant without the privacy trade-offs of cloud-based services. It runs **100% locally** via Ollama, allowing it to search, read, and interact with your file system without a single byte of data leaving your device.
+## How It Works
 
-## ⚡ Why OS Copilot?
-
-Current AI assistants require "Everything Access" to your cloud data. OS Copilot flips the script:
-
-- **Total Privacy:** Uses `Llama 3` running locally. Your personal documents, code, and logs remain on your disk.
-    
-- **Native Windows Integration:** Built with a "Spotlight-style" global overlay (`Ctrl + Space`) for instant access from any application.
-    
-- **Agentic Capabilities:** It doesn't just chat; it uses **ReAct (Reason + Act) prompting** to execute Python-based "Tools" for file system operations.
-    
-
-## 🛠️ The "Agentic" Workflow
-
-OS Copilot operates on a continuous feedback loop:
-
-1. **Observation:** User asks: "Find my resume and tell me the last job I listed."
-    
-2. **Reasoning:** The LLM decides it needs to use the `search_files` tool first.
-    
-3. **Action:** The Python backend executes the search and returns paths to the LLM.
-    
-4. **Refinement:** The LLM then chooses the `read_file` tool to extract the job info.
-    
-5. **Final Output:** AI presents the answer to the user in the UI overlay.
-    
-
-## 🛠️ Technical Stack
-
-- **Backend:** Python 3.11 with custom threading for the global hotkey listener.
-    
-- **GUI:** `customtkinter` – Provides a modern, GPU-accelerated, dark-mode interface.
-    
-- **Inference Engine:** `Ollama` (Running `Llama 3`).
-    
-- **Tooling:** Custom Python OS wrappers for secure file searching and reading.
-    
-
-## 🛡️ Safety & Guardrails
-
-Because the agent can access the file system, security is built into the core:
-
-- **Read-Only Default:** Currently, the agent is restricted to `Search`, `Read`, and `Open` operations. No `Delete` or `Edit` permissions are granted by default.
-    
-- **Context Truncation:** To prevent LLM "memory crashes," large files are automatically summarized or truncated before being sent to the LLM.
-    
-- **User-in-the-Loop:** For sensitive operations like opening an executable, the system can be configured to require manual confirmation.
-    
-
-## 🚀 Getting Started
-
-1. **Install Ollama:** Download from [ollama.com](https://ollama.com "null").
-    
-2. **Pull Model:** `ollama pull llama3`
-    
-3. **Clone & Run:**
-    
-
+```text
+User request
+	|
+	v
+main.py -> Ollama returns a JSON tool command
+	|
+	v
+plugin_loaded.py -> provides the active registry
+	|
+	v
+plugin_registry.py -> validates and dispatches the tool
+	|
+	v
+plugins/local_files.py -> performs the read-only filesystem action
 ```
-git clone [https://github.com/0xIta3hi/os-copilot.git](https://github.com/0xIta3hi/os-copilot.git
+
+Authentication is intentionally outside the plugin interface. Plugins expose platform actions; they do not need to know how authentication is configured.
+
+## Current Features
+
+The default `LocalFileSystem` plugin is registered with these tools:
+
+- `file_search(keyword, path=".")`: recursively searches filenames.
+- `open_file(filename, path=".")`: reads a UTF-8 text file.
+- `file_system_manipulation(action, path=".")`: inspects a path with `exists`, `list`, or `info`.
+
+The plugin confines paths to its configured root, defaults to the current user's home directory, and limits search results to 50 entries.
+
+## Requirements
+
+- Python 3.11 or newer
+- Ollama
+- The `phi3:mini` Ollama model
+- Packages listed in `requirements.txt`
+
+Install the Python dependencies and model:
+
+```bash
 pip install -r requirements.txt
+ollama pull phi3:mini
+```
+
+Make sure the Ollama service is running before starting the agent.
+
+## Run
+
+The application entry point is `main.py`:
+
+```bash
 python main.py
 ```
 
-### Upcoming updates
-- linking the backend to a new backend which is integrated with composio to have everything at the finger tips of the user. Anything the user will every need.
-- reducing the latency in Agentic Operations. (ideally sub 100ms)
+The current entry point runs one example request. A popup interface and global hotkey workflow are not implemented yet.
 
-_Press `Ctrl + Space` to summon the assistant._
+## Project Structure
 
-## Future Enhancement:
-- Integrate RAG.
-- Voice Assisted Searching.
-- low-latency for results.
+| File | Purpose |
+| --- | --- |
+| `main.py` | Calls Ollama, parses the JSON response, and orchestrates tool execution. |
+| `plugin_registry.py` | Registers plugin methods, describes available tools, and dispatches calls. |
+| `plugin_loaded.py` | Creates the default application registry. |
+| `plugins/local_files.py` | Implements the read-only local filesystem plugin. |
+| `plugins/github.py` | Reserved for a future GitHub plugin. |
+| `PLUGIN_ARCHITECTURE.md` | Documents the plugin boundary and authentication constraint. |
+| `listener.py` | Earlier experimental tool-routing code; not used by `main.py`. |
+| `ship-it.sh` | Stages, commits, and pushes Git changes; it is not the application launcher. |
 
-_Empowering users with private, local intelligence._
+## Adding a Plugin
+
+Create a platform class under `plugins/`, keep authentication out of the class, and register its public methods in `create_default_registry()`:
+
+```python
+from plugins.example import ExamplePlatform
+
+registry.register(
+	ExamplePlatform(),
+	{
+		"example_action": "Description shown to the language model.",
+	},
+)
+```
+
+The registered method must accept keyword arguments matching the JSON `parameters` object returned by Ollama.
+
+## Safety Notes
+
+The default plugin only searches, inspects, and reads files. It does not delete or modify files. The agent can still expose sensitive file contents to the local model, so review plugin permissions before registering new actions.
+
+## Development Status
+
+This repository contains the backend and plugin foundation. The following are not currently implemented:
+
+- Popup or desktop GUI
+- Global hotkey listener
+- GitHub, email, or Discord integrations
+- Multi-turn conversation state
+- Automated test suite

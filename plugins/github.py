@@ -59,5 +59,3 @@ class Github():
             }
             for pr in pr
         ]
-
-
